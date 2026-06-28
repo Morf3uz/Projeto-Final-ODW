@@ -8,8 +8,8 @@ $baseDir = dirname($vendorDir);
 return array(
     'utils\\' => array($baseDir . '/src/utils'),
     'model\\' => array($baseDir . '/src/model'),
-    'dao\\' => array($baseDir . '/src/dao'),
     'controller\\' => array($baseDir . '/src/controller'),
+    'Symfony\\Polyfill\\Php81\\' => array($vendorDir . '/symfony/polyfill-php81'),
     'Symfony\\Polyfill\\Php80\\' => array($vendorDir . '/symfony/polyfill-php80'),
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
     'Symfony\\Polyfill\\Intl\\Normalizer\\' => array($vendorDir . '/symfony/polyfill-intl-normalizer'),

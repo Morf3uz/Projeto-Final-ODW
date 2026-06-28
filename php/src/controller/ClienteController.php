@@ -3,6 +3,7 @@
 namespace controller;
 
 use Exception;
+use Throwable;
 use model\Cliente;
 use utils\Autorizacao;
 use utils\Conexao;
@@ -16,8 +17,8 @@ class ClienteController
         try {
             $em       = Conexao::getEntityManager();
             $clientes = $em->getRepository(Cliente::class)->findAll();
-        } catch (Exception $ex) {
-            $_SESSION['erro'] = "Erro ao buscar a lista de clientes.";
+        } catch (Throwable $ex) {
+            $_SESSION['erro'] = "Erro ao buscar a lista de clientes: " . $ex->getMessage();
         } finally {
             require __DIR__ . '/../view/cliente/listar.php';
         }
@@ -50,9 +51,14 @@ class ClienteController
 
             $senha = $_POST['senha'] ?? '';
 
+            $cpfLimpo = null;
+            if (!empty($cpf)) {
+                $cpfLimpo = preg_replace('/[^0-9]/', '', $cpf);
+            }
+
             $cliente->setNome($nome);
             $cliente->setEmail($email);
-            $cliente->setCpf(!empty($cpf) ? $cpf : null);
+            $cliente->setCpf($cpfLimpo);
 
             if (!empty($senha)) {
                 $cliente->setSenha(password_hash($senha, PASSWORD_BCRYPT));
@@ -62,10 +68,10 @@ class ClienteController
             $em->flush();
 
             header('Location: ' . BASE_URL . '/clientes');
-        } catch (Exception $ex) {
-            $_SESSION['erro'] = "Erro ao salvar os dados do cliente.";
+            exit;
+        } catch (Throwable $ex) {
+            $_SESSION['erro'] = "Erro ao salvar os dados: " . $ex->getMessage();
             header('Location: ' . BASE_URL . '/clientes/novo');
-        } finally {
             exit;
         }
     }
@@ -82,8 +88,8 @@ class ClienteController
             if (empty($cliente)) {
                 throw new Exception('Cliente não encontrado.');
             }
-        } catch (Exception $ex) {
-            $_SESSION['erro'] = "Erro ao carregar o cliente.";
+        } catch (Throwable $ex) {
+            $_SESSION['erro'] = "Erro ao carregar o cliente: " . $ex->getMessage();
         } finally {
             require __DIR__ . '/../view/cliente/form.php';
         }
@@ -101,8 +107,8 @@ class ClienteController
             if (empty($cliente)) {
                 throw new Exception('Cliente não encontrado.');
             }
-        } catch (Exception $ex) {
-            $_SESSION['erro'] = "Erro ao buscar o cliente.";
+        } catch (Throwable $ex) {
+            $_SESSION['erro'] = "Erro ao buscar o cliente: " . $ex->getMessage();
         } finally {
             require __DIR__ . '/../view/cliente/listar.php';
         }
@@ -123,7 +129,7 @@ class ClienteController
 
             $em->remove($cliente);
             $em->flush();
-        } catch (Exception $ex) {
+        } catch (Throwable $ex) {
             $_SESSION['erro'] = "Erro: Este cliente possui reservas vinculadas e não pode ser excluído.";
         } finally {
             header('Location: ' . BASE_URL . '/clientes');

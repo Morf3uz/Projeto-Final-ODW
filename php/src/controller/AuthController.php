@@ -108,10 +108,15 @@ class AuthController
                 throw new Exception('Este e-mail já está cadastrado.');
             }
 
+            $cpfLimpo = null;
+            if (!empty($cpf)) {
+                $cpfLimpo = preg_replace('/[^0-9]/', '', $cpf);
+            }
+
             $cliente = new Cliente();
             $cliente->setNome($nome);
             $cliente->setEmail($email);
-            $cliente->setCpf(!empty($cpf) ? $cpf : null);
+            $cliente->setCpf($cpfLimpo);
             $cliente->setSenha(password_hash($senha, PASSWORD_BCRYPT));
             $cliente->setIsAdmin(false);
 

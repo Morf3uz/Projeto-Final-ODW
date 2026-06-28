@@ -3,6 +3,7 @@
 namespace controller;
 
 use Exception;
+use Throwable;
 use model\Destino;
 use utils\Autorizacao;
 use utils\Cloudinary;
@@ -17,7 +18,7 @@ class DestinoController
         try {
             $em       = Conexao::getEntityManager();
             $destinos = $em->getRepository(Destino::class)->findAll();
-        } catch (Exception $ex) {
+        } catch (Throwable $ex) {
             echo e($ex->getMessage());
         } finally {
             require __DIR__ . '/../view/destino/listar.php';
@@ -70,11 +71,9 @@ class DestinoController
             $em->flush();
 
             header('Location: ' . BASE_URL . '/destinos');
-        } catch (Exception $ex) {
-            echo e($ex->getMessage());
-            header('Location: ' . BASE_URL . '/destinos/novo');
-        } finally {
             exit;
+        } catch (Throwable $ex) {
+            die("Erro ao salvar o destino: " . $ex->getMessage());
         }
     }
 
@@ -90,7 +89,7 @@ class DestinoController
             if (empty($destino)) {
                 throw new Exception('Destino não encontrado.');
             }
-        } catch (Exception $ex) {
+        } catch (Throwable $ex) {
             echo e($ex->getMessage());
         } finally {
             require __DIR__ . '/../view/destino/form.php';
@@ -109,7 +108,7 @@ class DestinoController
             if (empty($destino)) {
                 throw new Exception('Destino não encontrado.');
             }
-        } catch (Exception $ex) {
+        } catch (Throwable $ex) {
             echo e($ex->getMessage());
         } finally {
             require __DIR__ . '/../view/destino/listar.php';
@@ -131,11 +130,11 @@ class DestinoController
 
             $em->remove($destino);
             $em->flush();
-        } catch (Exception $ex) {
-            echo e($ex->getMessage());
-        } finally {
+
             header('Location: ' . BASE_URL . '/destinos');
             exit;
+        } catch (Throwable $ex) {
+            die("Erro ao remover o destino: " . $ex->getMessage());
         }
     }
 }

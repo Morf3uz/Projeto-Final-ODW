@@ -4,6 +4,7 @@ namespace controller;
 
 use DateTime;
 use Exception;
+use Throwable;
 use model\Cronograma;
 use model\PacoteDeTurismo;
 use utils\Autorizacao;
@@ -18,7 +19,7 @@ class CronogramaController
         try {
             $em          = Conexao::getEntityManager();
             $cronogramas = $em->getRepository(Cronograma::class)->findAll();
-        } catch (Exception $ex) {
+        } catch (Throwable $ex) {
             echo e($ex->getMessage());
         } finally {
             require __DIR__ . '/../view/cronograma/listar.php';
@@ -55,18 +56,16 @@ class CronogramaController
             $pacote = $pacoteId ? $em->find(PacoteDeTurismo::class, (int) $pacoteId) : null;
 
             $cronograma->setDescricao($descricao);
-            $cronograma->setHorario($horario ? new DateTime($horario) : null);
+            $cronograma->setHorario(empty($horario) ? null : $horario);
             $cronograma->setPacote($pacote);
 
             $em->persist($cronograma);
             $em->flush();
 
             header('Location: ' . BASE_URL . '/cronogramas');
-        } catch (Exception $ex) {
-            echo e($ex->getMessage());
-            header('Location: ' . BASE_URL . '/cronogramas/novo');
-        } finally {
             exit;
+        } catch (Throwable $ex) {
+            die("Erro ao salvar o cronograma: " . $ex->getMessage());
         }
     }
 
@@ -83,7 +82,7 @@ class CronogramaController
             if (empty($cronograma)) {
                 throw new Exception('Cronograma não encontrado.');
             }
-        } catch (Exception $ex) {
+        } catch (Throwable $ex) {
             echo e($ex->getMessage());
         } finally {
             require __DIR__ . '/../view/cronograma/form.php';
@@ -102,7 +101,7 @@ class CronogramaController
             if (empty($cronograma)) {
                 throw new Exception('Cronograma não encontrado.');
             }
-        } catch (Exception $ex) {
+        } catch (Throwable $ex) {
             echo e($ex->getMessage());
         } finally {
             require __DIR__ . '/../view/cronograma/listar.php';
@@ -124,11 +123,11 @@ class CronogramaController
 
             $em->remove($cronograma);
             $em->flush();
-        } catch (Exception $ex) {
-            echo e($ex->getMessage());
-        } finally {
+            
             header('Location: ' . BASE_URL . '/cronogramas');
             exit;
+        } catch (Throwable $ex) {
+            die("Erro ao remover: " . $ex->getMessage());
         }
     }
 }
