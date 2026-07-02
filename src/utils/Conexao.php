@@ -5,7 +5,6 @@ namespace utils;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
-use Dotenv\Dotenv;
 
 class Conexao
 {
@@ -16,11 +15,8 @@ class Conexao
         if (self::$entityManager === null) {
             $config = ORMSetup::createAttributeMetadataConfiguration(
                 paths: [realpath(__DIR__ . '/../model')],
-                isDevMode: true,
+                isDevMode: false,
             );
-
-            $dotenv = Dotenv::createImmutable(dirname(__DIR__, 2));
-            $dotenv->load();
 
             $connection = DriverManager::getConnection([
                 'driver'   => trim($_ENV['DB_DRIVER']),

@@ -9,7 +9,7 @@ date_default_timezone_set('America/Sao_Paulo');
 require "../vendor/autoload.php";
 require __DIR__ . '/../src/utils/helpers.php';
 
-define('BASE_URL', '/php/public');
+define('BASE_URL', '');
 
 $dispatcher = FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
 
